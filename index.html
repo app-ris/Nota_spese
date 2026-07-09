@@ -1,558 +1,764 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Invio Documenti">
-<meta name="theme-color" content="#1A3A5C">
-<link rel="manifest" href="manifest.json">
-<title>Invio Documenti</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Primanota Cassa</title>
+<meta name="theme-color" content="#1c2b39" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon-192.png" />
+<link rel="apple-touch-icon" href="icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-  :root {
-    --blu: #1A3A5C;
-    --blu-chiaro: #2C5F8A;
-    --accento: #E8A020;
-    --accento-chiaro: #FFF3DC;
-    --verde: #1E7A4A;
-    --verde-chiaro: #E8F7EE;
-    --rosso: #C0392B;
-    --rosso-chiaro: #FBEAE8;
-    --grigio-bg: #F2F4F7;
-    --grigio-bordo: #D8DCE4;
-    --testo: #1C2B3A;
-    --testo-secondario: #5A6A7A;
-    --bianco: #FFFFFF;
-    --raggio: 12px;
-    --raggio-sm: 8px;
-    --ombra: 0 2px 12px rgba(26,58,92,0.10);
+  :root{
+    --ink:#1c2b39;
+    --ink-soft:#3c4c5c;
+    --paper:#f7f5ef;
+    --paper-deep:#efece2;
+    --brass:#ab8b3c;
+    --brass-dark:#8a6f2c;
+    --line:#d8d3c4;
+    --success:#2f6f4e;
+    --success-bg:#e8f1ec;
+    --danger:#a23b32;
+    --danger-bg:#f7e9e7;
+    --muted:#6b7280;
+    --radius:10px;
+    --sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--grigio-bg); color: var(--testo); min-height: 100vh; }
 
-  .schermo { display: none; flex-direction: column; min-height: 100vh; }
-  .schermo.attivo { display: flex; }
+  *{box-sizing:border-box;}
 
-  .header { background: var(--blu); color: white; padding: 16px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; }
-  .header-back { background: none; border: none; color: white; font-size: 22px; cursor: pointer; padding: 4px 8px 4px 0; line-height: 1; }
-  .header h1 { font-size: 18px; font-weight: 600; flex: 1; }
-  .header-sub { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 2px; }
-  .header-logout { background: none; border: none; color: rgba(255,255,255,0.8); font-size: 13px; cursor: pointer; }
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 0%, #24374a 0%, transparent 45%),
+      var(--ink);
+    font-family:var(--sans);
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    padding:32px 16px 64px;
+  }
 
-  /* SCHERMO CENTRATO (config / login) */
-  .schermo-centro { justify-content: center; align-items: center; padding: 32px 24px; }
-  .logo-area { text-align: center; margin-bottom: 40px; }
-  .logo-icon { width: 80px; height: 80px; background: var(--blu); border-radius: 20px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; box-shadow: var(--ombra); }
-  .logo-icon svg { width: 42px; height: 42px; }
-  .logo-area h1 { font-size: 24px; font-weight: 700; color: var(--blu); letter-spacing: -0.5px; }
-  .logo-area p { color: var(--testo-secondario); margin-top: 6px; font-size: 14px; }
-  .card { background: var(--bianco); border-radius: var(--raggio); padding: 28px 24px; width: 100%; max-width: 380px; box-shadow: var(--ombra); }
-  .card p.descrizione { color: var(--testo-secondario); font-size: 14px; margin-bottom: 20px; line-height: 1.5; text-align: center; }
+  .app{
+    width:100%;
+    max-width:480px;
+  }
 
-  .campo { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-  .campo label { font-size: 12px; font-weight: 600; color: var(--testo-secondario); text-transform: uppercase; letter-spacing: 0.5px; }
-  .campo input { border: 2px solid var(--grigio-bordo); border-radius: var(--raggio-sm); padding: 13px 14px; font-size: 16px; color: var(--testo); background: var(--bianco); outline: none; width: 100%; }
-  .campo input:focus { border-color: var(--blu); }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:22px;
+    padding:0 4px;
+  }
+  .brand-mark{
+    width:38px;height:38px;border-radius:9px;
+    background:var(--brass);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-weight:600;color:var(--ink);
+    font-size:18px;
+    flex-shrink:0;
+  }
+  .brand-text h1{
+    font-size:17px;margin:0;color:#f7f5ef;letter-spacing:.2px;
+  }
+  .brand-text p{
+    margin:2px 0 0;font-size:12px;color:#9fb0be;
+  }
 
-  .btn-primario { background: var(--blu); color: white; border: none; border-radius: var(--raggio-sm); padding: 16px 28px; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.15s; }
-  .btn-primario:active { background: var(--blu-chiaro); }
-  .btn-primario:disabled { background: var(--grigio-bordo); color: var(--testo-secondario); cursor: not-allowed; }
-  .btn-secondario { background: var(--bianco); color: var(--blu); border: 2px solid var(--blu); border-radius: var(--raggio-sm); padding: 13px 28px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.15s; margin-top: 10px; }
-  .btn-secondario:active { background: var(--grigio-bg); }
+  .card{
+    background:var(--paper);
+    border-radius:var(--radius);
+    padding:24px;
+    box-shadow:0 18px 40px -18px rgba(0,0,0,.55);
+  }
 
-  #input-config-file { display: none; }
+  .field{
+    margin-bottom:18px;
+  }
+  .field label{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
 
-  .stato-box { border-radius: var(--raggio-sm); padding: 14px 16px; margin-top: 18px; text-align: left; font-size: 13px; line-height: 1.5; }
-  .stato-box.ok { background: var(--verde-chiaro); border: 1px solid var(--verde); color: var(--verde); }
-  .stato-box.errore { background: var(--rosso-chiaro); border: 1px solid var(--rosso); color: var(--rosso); }
-  .stato-box strong { display: block; margin-bottom: 2px; }
+  .choose-row{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:8px;
+  }
 
-  .config-attuale { background: var(--accento-chiaro); border: 1px solid var(--accento); border-radius: var(--raggio-sm); padding: 12px 14px; margin-bottom: 20px; font-size: 12px; color: var(--blu); }
-  .config-attuale strong { display: block; font-size: 12px; margin-bottom: 2px; }
+  .btn-outline{
+    background:transparent;
+    border:1px solid var(--ink-soft);
+    color:var(--ink);
+    padding:0 16px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  .btn-outline:hover:not(:disabled){
+    border-color:var(--brass);
+    color:var(--ink);
+  }
+  .btn-outline:disabled{
+    opacity:.7;
+    cursor:not-allowed;
+  }
 
-  .errore-msg { color: var(--rosso); font-size: 13px; margin-top: -6px; margin-bottom: 14px; min-height: 16px; }
+  .file-row{
+    display:flex;
+    gap:10px;
+  }
+  .file-name{
+    flex:1;
+    display:flex;
+    align-items:center;
+    padding:0 12px;
+    border:1px dashed var(--line);
+    border-radius:8px;
+    font-size:13px;
+    color:var(--muted);
+    background:#fff;
+    min-width:0;
+  }
+  .file-name span{
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .file-name.filled{
+    color:var(--ink);
+    border-style:solid;
+    border-color:var(--brass);
+  }
 
-  /* SCHERMO PRINCIPALE: invio documento */
-  #s-invio { }
-  .invio-body { flex: 1; padding: 20px 16px; }
+  .text-input{
+    width:100%;
+    padding:11px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-family:var(--sans);
+    font-size:13.5px;
+    color:var(--ink);
+    background:#fff;
+  }
+  .text-input:focus{
+    outline:none;
+    border-color:var(--brass);
+  }
 
-  .sezione { background: var(--bianco); border-radius: var(--raggio); padding: 20px; box-shadow: var(--ombra); margin-bottom: 16px; }
-  .sezione h3 { font-size: 13px; font-weight: 700; color: var(--testo-secondario); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
+  input[type="file"]{ display:none; }
 
-  .azioni-file { display: flex; gap: 10px; }
-  .btn-azione-file { flex: 1; background: var(--grigio-bg); border: 2px dashed var(--grigio-bordo); border-radius: var(--raggio-sm); padding: 22px 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; color: var(--blu); font-size: 13px; font-weight: 600; transition: all 0.15s; }
-  .btn-azione-file:active { background: var(--grigio-bordo); }
-  .btn-azione-file svg { width: 28px; height: 28px; }
-  #input-foto, #input-allegato { display: none; }
+  button{
+    font-family:var(--sans);
+    cursor:pointer;
+    border:none;
+  }
 
-  .anteprima-lista { margin-top: 14px; }
-  .anteprima-item { display: flex; align-items: center; gap: 12px; background: var(--grigio-bg); border-radius: var(--raggio-sm); padding: 10px 12px; margin-bottom: 8px; }
-  .anteprima-thumb { width: 44px; height: 44px; border-radius: var(--raggio-sm); object-fit: cover; flex-shrink: 0; background: var(--grigio-bordo); display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .anteprima-info { flex: 1; min-width: 0; }
-  .anteprima-nome { font-size: 13px; font-weight: 600; color: var(--testo); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .anteprima-dim { font-size: 11px; color: var(--testo-secondario); margin-top: 2px; }
-  .btn-rimuovi { background: none; border: none; color: var(--rosso); font-size: 20px; cursor: pointer; padding: 4px 8px; line-height: 1; }
+  .btn-choose{
+    background:var(--ink);
+    color:#fff;
+    padding:0 16px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .btn-choose:hover{ background:var(--ink-soft); }
 
-  .campo textarea { border: 2px solid var(--grigio-bordo); border-radius: var(--raggio-sm); padding: 13px 14px; font-size: 15px; color: var(--testo); background: var(--bianco); outline: none; width: 100%; resize: vertical; min-height: 80px; font-family: inherit; }
-  .campo textarea:focus { border-color: var(--blu); }
+  .btn-primary{
+    width:100%;
+    background:var(--brass);
+    color:var(--ink);
+    padding:13px 16px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:.02em;
+    transition:transform .12s ease, background .15s ease;
+  }
+  .btn-primary:hover:not(:disabled){ background:var(--brass-dark); }
+  .btn-primary:active:not(:disabled){ transform:scale(.99); }
+  .btn-primary:disabled{
+    background:#cdc6ac;
+    color:#8b8672;
+    cursor:not-allowed;
+  }
 
-  .btn-grande { background: var(--blu); color: white; border: none; border-radius: var(--raggio-sm); padding: 18px 24px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
-  .btn-grande:disabled { background: var(--grigio-bordo); color: var(--testo-secondario); cursor: not-allowed; }
-  .btn-grande.invio-corso { background: var(--blu-chiaro); }
+  .btn-primary .spinner{
+    display:inline-block;
+    width:14px;height:14px;
+    border:2px solid rgba(28,43,57,.35);
+    border-top-color:var(--ink);
+    border-radius:50%;
+    margin-right:8px;
+    vertical-align:-2px;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
 
-  .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: girare 0.7s linear infinite; }
-  @keyframes girare { to { transform: rotate(360deg); } }
+  .result-wrap{
+    margin-top:22px;
+  }
+  .result-wrap.hidden{ display:none; }
 
-  /* TOAST */
-  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--testo); color: white; padding: 12px 22px; border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,0.25); transition: transform 0.25s ease; z-index: 200; max-width: 90%; text-align: center; }
-  #toast.visibile { transform: translateX(-50%) translateY(0); }
+  .receipt{
+    position:relative;
+    background:#fffefb;
+    border-radius:2px;
+    padding:20px 18px 22px;
+    box-shadow:0 10px 24px -14px rgba(0,0,0,.4);
+  }
+  .receipt::before{
+    content:"";
+    position:absolute;
+    top:-6px; left:0; right:0; height:12px;
+    background-image: radial-gradient(circle, var(--ink) 4px, transparent 4.5px);
+    background-position: 0 0;
+    background-size: 16px 12px;
+    background-repeat: repeat-x;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 50%, black 50%);
+    mask-image: linear-gradient(to bottom, transparent 50%, black 50%);
+  }
+  .receipt pre{
+    font-family:var(--mono);
+    font-size:13px;
+    line-height:1.6;
+    white-space:pre-wrap;
+    word-break:break-word;
+    margin:0;
+    color:var(--ink);
+  }
+
+  .downloads{
+    display:flex;
+    gap:10px;
+    margin-top:16px;
+  }
+  .btn-ghost{
+    flex:1;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    font-size:12.5px;
+    font-weight:600;
+    padding:10px 8px;
+    border-radius:8px;
+  }
+  .btn-ghost:hover:not(:disabled){
+    border-color:var(--brass);
+    color:var(--ink);
+  }
+  .btn-ghost:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+  }
+
+  .panels{
+    margin-top:16px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .panel{
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#fffefb;
+    overflow:hidden;
+  }
+  .panel summary{
+    list-style:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:10px 14px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    background:var(--paper-deep);
+  }
+  .panel summary::-webkit-details-marker{ display:none; }
+  .panel summary .chev{
+    font-size:11px;
+    color:var(--brass-dark);
+    transition:transform .15s ease;
+  }
+  .panel[open] summary .chev{ transform:rotate(90deg); }
+  .panel pre{
+    margin:0;
+    padding:14px;
+    font-family:var(--mono);
+    font-size:11.5px;
+    line-height:1.55;
+    white-space:pre-wrap;
+    word-break:break-all;
+    max-height:220px;
+    overflow-y:auto;
+    color:var(--ink);
+  }
+  .panel .empty{
+    color:var(--muted);
+    font-style:italic;
+  }
+
+  .foot-note{
+    text-align:center;
+    font-size:11px;
+    color:#8ea0ae;
+    margin-top:18px;
+  }
+
+  .install-card{
+    margin-top:16px;
+    background:var(--paper);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .install-card summary{
+    list-style:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:14px 18px;
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .install-card summary::-webkit-details-marker{ display:none; }
+  .install-card summary .chev{
+    font-size:11px;
+    color:var(--brass-dark);
+    transition:transform .15s ease;
+  }
+  .install-card[open] summary .chev{ transform:rotate(90deg); }
+  .install-body{
+    padding:0 18px 18px;
+  }
+  .install-os{
+    margin-top:10px;
+  }
+  .install-os h3{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    color:var(--ink-soft);
+    margin:0 0 8px;
+  }
+  .install-os ol{
+    margin:0;
+    padding-left:20px;
+    font-size:13px;
+    line-height:1.6;
+    color:var(--ink);
+  }
+  .install-os li{
+    margin-bottom:4px;
+  }
 </style>
 </head>
 <body>
 
-<!-- SCHERMO 1: CONFIGURAZIONE -->
-<div class="schermo schermo-centro attivo" id="s-config">
-  <div class="logo-area">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+<div class="app">
+  <div class="brand">
+    <div class="brand-mark">C</div>
+    <div class="brand-text">
+      <h1>Primanota Cassa</h1>
+      <p>Invio file a Primanota di cassa</p>
     </div>
-    <h1>Invio Documenti</h1>
-    <p>Configurazione iniziale richiesta</p>
   </div>
+
   <div class="card">
-    <p class="descrizione">Carica il file di configurazione fornito dal tuo amministratore per collegare l'app al servizio corretto.</p>
-    <button class="btn-primario" onclick="document.getElementById('input-config-file').click()">
-      Carica file di configurazione
-    </button>
-    <input type="file" id="input-config-file" accept="application/json,.json">
-    <div id="config-stato"></div>
-  </div>
-</div>
-
-<!-- SCHERMO 2: LOGIN -->
-<div class="schermo schermo-centro" id="s-login">
-  <div class="logo-area">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-    </div>
-    <h1>Accedi</h1>
-    <p>Inserisci le tue credenziali</p>
-  </div>
-  <div class="card">
-    <div class="config-attuale" id="config-riepilogo"></div>
-    <div class="campo">
-      <label>Nome utente</label>
-      <input type="text" id="login-username" autocomplete="username" placeholder="nome.cognome">
-    </div>
-    <div class="campo">
-      <label>Password</label>
-      <input type="password" id="login-password" autocomplete="current-password" placeholder="••••••••">
-    </div>
-    <div class="errore-msg" id="login-errore"></div>
-    <button class="btn-primario" id="btn-login" onclick="eseguiLogin()">Accedi</button>
-    <button class="btn-secondario" onclick="cambiaConfigurazione()">Cambia configurazione</button>
-  </div>
-</div>
-
-<!-- SCHERMO 3: INVIO DOCUMENTO -->
-<div class="schermo" id="s-invio">
-  <div class="header">
-    <div style="flex:1">
-      <h1>Invio Documenti</h1>
-      <div class="header-sub" id="invio-sub"></div>
-    </div>
-    <button class="header-logout" onclick="eseguiLogout()">Esci</button>
-  </div>
-  <div class="invio-body">
-
-    <div class="sezione">
-      <h3>Documento</h3>
-      <div class="azioni-file">
-        <div class="btn-azione-file" onclick="document.getElementById('input-foto').click()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          Scatta foto
-        </div>
-        <div class="btn-azione-file" onclick="document.getElementById('input-allegato').click()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-          Allega file
-        </div>
+    <div class="field">
+      <label for="fileInput">File da caricare</label>
+      <div class="choose-row">
+        <button type="button" class="btn-choose" id="chooseBtn">Scegli file</button>
+        <button type="button" class="btn-choose" id="cameraBtn">Scatta foto</button>
       </div>
-      <input type="file" id="input-foto" accept="image/*" capture="environment">
-      <input type="file" id="input-allegato">
-      <div class="anteprima-lista" id="anteprima-lista"></div>
+      <div class="file-row">
+        <div class="file-name" id="fileNameBox"><span id="fileNameText">Nessun file selezionato</span></div>
+        <button type="button" class="btn-outline" id="viewFileBtn" disabled>Visualizza file caricato</button>
+      </div>
+      <input type="file" id="fileInput" />
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" />
     </div>
 
-    <div class="sezione">
-      <h3>Note (opzionale)</h3>
-      <div class="campo" style="margin-bottom:0">
-        <textarea id="campo-note" placeholder="Aggiungi una nota o un riferimento..."></textarea>
+    <div class="field">
+      <label for="descrizioneInput">Descrizione</label>
+      <input type="text" id="descrizioneInput" class="text-input" placeholder="Descrizione" />
+    </div>
+
+    <button type="button" class="btn-primary" id="sendBtn" disabled>Invia a Primanota di cassa</button>
+
+    <div class="result-wrap hidden" id="resultWrap">
+      <div class="receipt" id="receipt">
+        <pre id="receiptText"></pre>
+      </div>
+      <div class="panels">
+        <details class="panel" id="reqPanel">
+          <summary>Chiamata inviata <span class="chev">&#9656;</span></summary>
+          <pre id="reqPanelText"><span class="empty">Nessuna chiamata effettuata.</span></pre>
+        </details>
+        <details class="panel" id="respPanel">
+          <summary>Risposta ricevuta <span class="chev">&#9656;</span></summary>
+          <pre id="respPanelText"><span class="empty">Nessuna risposta ricevuta.</span></pre>
+        </details>
+      </div>
+      <div class="downloads">
+        <button type="button" class="btn-ghost" id="downloadReq" disabled>Scarica richiesta (.txt)</button>
+        <button type="button" class="btn-ghost" id="downloadResp" disabled>Scarica risposta (.txt)</button>
       </div>
     </div>
-
-    <button class="btn-grande" id="btn-invia" onclick="inviaDocumento()" disabled>
-      Invia documento
-    </button>
   </div>
-</div>
 
-<div id="toast"></div>
+  <details class="install-card">
+    <summary>Installa l'app sul telefono <span class="chev">&#9656;</span></summary>
+    <div class="install-body">
+      <div class="install-os">
+        <h3>Android (Chrome)</h3>
+        <ol>
+          <li>Apri questa pagina con Chrome.</li>
+          <li>Tocca il menu <strong>&#8942;</strong> (i tre puntini) in alto a destra.</li>
+          <li>Tocca <strong>"Aggiungi a schermata Home"</strong> (o <strong>"Installa app"</strong>, a seconda della versione di Chrome).</li>
+          <li>Conferma toccando <strong>"Aggiungi"</strong> o <strong>"Installa"</strong>.</li>
+        </ol>
+      </div>
+      <div class="install-os">
+        <h3>iPhone (Safari)</h3>
+        <ol>
+          <li>Apri questa pagina con <strong>Safari</strong> (su iPhone la funzione è disponibile solo da Safari, non da Chrome o altri browser).</li>
+          <li>Tocca l'icona di condivisione <strong>&#8593;&#9634;</strong> in basso al centro (o in alto, secondo il modello).</li>
+          <li>Scorri l'elenco e tocca <strong>"Aggiungi alla schermata Home"</strong>.</li>
+          <li>Tocca <strong>"Aggiungi"</strong> in alto a destra.</li>
+        </ol>
+      </div>
+    </div>
+  </details>
+</div>
 
 <script>
-// =====================================================================
-// STATO GLOBALE
-// =====================================================================
-let config = null;        // { url, istanza }  -> da file JSON
-let sessione = null;      // { token, username } -> da login
-let fileSelezionato = null;
+(function(){
+  "use strict";
 
-// =====================================================================
-// AVVIO APP: verifica config e sessione salvate
-// =====================================================================
-window.addEventListener('DOMContentLoaded', () => {
-  caricaConfigSalvata();
-  if (config) {
-    caricaSessioneSalvata();
-    if (sessione) {
-      mostraSchermo('s-invio');
-      aggiornaIntestazioneInvio();
+  const WS_URL = "https://www.lucchi.com:448/wigest617/servlet/bapp_cassa_ws";
+
+  const fileInput = document.getElementById("fileInput");
+  const chooseBtn = document.getElementById("chooseBtn");
+  const cameraInput = document.getElementById("cameraInput");
+  const cameraBtn = document.getElementById("cameraBtn");
+  const viewFileBtn = document.getElementById("viewFileBtn");
+  const descrizioneInput = document.getElementById("descrizioneInput");
+  const fileNameBox = document.getElementById("fileNameBox");
+  const fileNameText = document.getElementById("fileNameText");
+  const sendBtn = document.getElementById("sendBtn");
+  const resultWrap = document.getElementById("resultWrap");
+  const receipt = document.getElementById("receipt");
+  const receiptText = document.getElementById("receiptText");
+  const downloadReqBtn = document.getElementById("downloadReq");
+  const downloadRespBtn = document.getElementById("downloadResp");
+  const reqPanelText = document.getElementById("reqPanelText");
+  const respPanelText = document.getElementById("respPanelText");
+
+  let selectedFile = null;
+  let selectedFileUrl = null;
+  let lastRequestXML = "";
+  let lastResponseXML = "";
+
+  function handleFileSelected(file){
+    if (selectedFileUrl){
+      URL.revokeObjectURL(selectedFileUrl);
+      selectedFileUrl = null;
+    }
+    selectedFile = file || null;
+    if (selectedFile) {
+      fileNameText.textContent = selectedFile.name;
+      fileNameBox.classList.add("filled");
+      sendBtn.disabled = false;
+      selectedFileUrl = URL.createObjectURL(selectedFile);
+      viewFileBtn.disabled = false;
     } else {
-      mostraSchermoLogin();
+      fileNameText.textContent = "Nessun file selezionato";
+      fileNameBox.classList.remove("filled");
+      sendBtn.disabled = true;
+      viewFileBtn.disabled = true;
     }
-  } else {
-    mostraSchermo('s-config');
-  }
-});
-
-// =====================================================================
-// SCHERMO 1: CONFIGURAZIONE (upload file JSON)
-// =====================================================================
-document.getElementById('input-config-file').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    let parsed;
-    try {
-      parsed = JSON.parse(evt.target.result);
-    } catch (err) {
-      mostraStatoConfig('errore', 'File non valido', 'Il file non è un JSON leggibile. Verifica che sia il file corretto.');
-      return;
-    }
-    // Validazione minima dei campi attesi
-    if (!parsed.url || !parsed.istanza || !parsed.servletLogin) {
-      mostraStatoConfig('errore', 'Campi mancanti', 'Il file deve contenere i campi "url", "istanza" e "servletLogin".');
-      return;
-    }
-    // Normalizza l'URL (rimuove eventuale slash finale)
-    parsed.url = String(parsed.url).replace(/\/+$/, '');
-    config = parsed;
-    try {
-      localStorage.setItem('app_config', JSON.stringify(config));
-    } catch (err) {
-      mostraToast('Attenzione: impossibile salvare la configurazione sul dispositivo');
-    }
-    mostraStatoConfig('ok', 'Configurazione caricata', `Istanza: ${config.istanza}`);
-    setTimeout(() => mostraSchermoLogin(), 700);
-  };
-  reader.onerror = function() {
-    mostraStatoConfig('errore', 'Errore di lettura', 'Non è stato possibile leggere il file selezionato.');
-  };
-  reader.readAsText(file);
-});
-
-function mostraStatoConfig(tipo, titolo, testo) {
-  const el = document.getElementById('config-stato');
-  el.innerHTML = `<div class="stato-box ${tipo}"><strong>${titolo}</strong>${testo}</div>`;
-}
-
-function caricaConfigSalvata() {
-  try {
-    const raw = localStorage.getItem('app_config');
-    if (raw) config = JSON.parse(raw);
-  } catch (err) {
-    config = null;
-  }
-}
-
-function cambiaConfigurazione() {
-  if (!confirm('Cambiare la configurazione? Dovrai effettuare nuovamente l\'accesso.')) return;
-  localStorage.removeItem('app_config');
-  localStorage.removeItem('app_sessione');
-  config = null;
-  sessione = null;
-  document.getElementById('config-stato').innerHTML = '';
-  mostraSchermo('s-config');
-}
-
-// =====================================================================
-// SCHERMO 2: LOGIN
-// =====================================================================
-function mostraSchermoLogin() {
-  document.getElementById('config-riepilogo').innerHTML =
-    `<strong>Istanza collegata</strong>${config.istanza}`;
-  mostraSchermo('s-login');
-}
-
-async function eseguiLogin() {
-  const username = document.getElementById('login-username').value.trim();
-  const password = document.getElementById('login-password').value;
-  const erroreEl = document.getElementById('login-errore');
-  erroreEl.textContent = '';
-
-  if (!username || !password) {
-    erroreEl.textContent = 'Inserisci nome utente e password.';
-    return;
   }
 
-  const btn = document.getElementById('btn-login');
-  btn.disabled = true;
-  btn.textContent = 'Accesso in corso...';
+  chooseBtn.addEventListener("click", () => fileInput.click());
+  cameraBtn.addEventListener("click", () => cameraInput.click());
 
-  try {
-    // Il servlet accetta GET con parametri in querystring: utente e password.
-    // config.url è la base comune dei servlet, config.servletLogin il nome specifico.
-    const parametri = new URLSearchParams({ utente: username, password: password });
-    const risposta = await fetch(`${config.url}${config.servletLogin}?${parametri.toString()}`, {
-      method: 'GET',
-      credentials: 'include' // utile solo se il servlet usa anche sessione/cookie JSESSIONID
+  fileInput.addEventListener("change", () => {
+    handleFileSelected(fileInput.files[0]);
+  });
+
+  cameraInput.addEventListener("change", () => {
+    handleFileSelected(cameraInput.files[0]);
+  });
+
+  viewFileBtn.addEventListener("click", () => {
+    if (selectedFileUrl) window.open(selectedFileUrl, "_blank");
+  });
+
+  function readFileAsBase64(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        // reader.result is "data:<mime>;base64,AAAA..." -> strip the prefix
+        const commaIndex = reader.result.indexOf(",");
+        resolve(reader.result.substring(commaIndex + 1));
+      };
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(file);
     });
+  }
 
-    if (!risposta.ok) {
-      erroreEl.textContent = `Errore del server (${risposta.status}). Riprova più tardi.`;
-      return;
+  function escapeXml(str){
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function buildEnvelope(nomeFile, fileBase64, descrizione){
+    return `<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bapp="http://bapp_cassa_ws.ws.localhost/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <bapp:bapp_cassa_ws_Run>
+         <bapp:m_UserName>ws</bapp:m_UserName>
+         <bapp:m_Password>ws_1234!</bapp:m_Password>
+         <bapp:m_Company>701</bapp:m_Company>
+         <bapp:m_Instance>SERVLET_WIGEST_AMICIGIGI_1105</bapp:m_Instance>
+         <bapp:p_user>5</bapp:p_user>
+         <bapp:p_ws_call>Y</bapp:p_ws_call>
+         <bapp:p_Subs>09701</bapp:p_Subs>
+         <bapp:p_Branc>9701</bapp:p_Branc>
+         <bapp:p_Sect>01</bapp:p_Sect>
+         <bapp:p_Curr>EUR</bapp:p_Curr>
+         <bapp:p_PhiSite>009701</bapp:p_PhiSite>
+         <bapp:p_PaySite></bapp:p_PaySite>
+         <bapp:p_PaySubs></bapp:p_PaySubs>
+         <bapp:p_Wareh></bapp:p_Wareh>
+         <bapp:p_DefaYearS></bapp:p_DefaYearS>
+         <bapp:p_DefaSess></bapp:p_DefaSess>
+         <bapp:p_UL></bapp:p_UL>
+         <bapp:p_fileName>${escapeXml(nomeFile)}</bapp:p_fileName>
+         <bapp:p_fileBase64>${fileBase64}</bapp:p_fileBase64>
+         <bapp:p_usercassa>119</bapp:p_usercassa>
+         <bapp:p_descrizione>${escapeXml(descrizione)}</bapp:p_descrizione>
+      </bapp:bapp_cassa_ws_Run>
+   </soapenv:Body>
+</soapenv:Envelope>`;
+  }
+
+  // Find the first element anywhere in the doc matching a local name,
+  // regardless of namespace prefix (SOAP responses often carry one).
+  function decodeEntitiesOnce(str){
+    const ta = document.createElement("textarea");
+    ta.innerHTML = str;
+    return ta.value;
+  }
+
+  // Some server responses are double-escaped (e.g. "&amp;lt;" instead of "<"),
+  // so decode repeatedly until nothing changes (capped to avoid infinite loops).
+  function deepDecode(str){
+    if (!str) return str;
+    let prev = str;
+    for (let i = 0; i < 5; i++){
+      const next = decodeEntitiesOnce(prev);
+      if (next === prev) break;
+      prev = next;
     }
+    return prev;
+  }
 
-    let dati;
+  // Find the first element anywhere under root matching a local name,
+  // regardless of namespace prefix or letter case (the server has changed
+  // casing between versions, so we match case-insensitively for safety).
+  function findByLocalName(root, name){
+    if (!root) return null;
+    const all = root.getElementsByTagName("*");
+    const target = name.toLowerCase();
+    for (let i = 0; i < all.length; i++){
+      const ln = all[i].localName || all[i].nodeName;
+      if (ln && ln.toLowerCase() === target) return all[i];
+    }
+    return null;
+  }
+
+  function findAllByLocalName(root, name){
+    if (!root) return [];
+    const all = root.getElementsByTagName("*");
+    const target = name.toLowerCase();
+    const results = [];
+    for (let i = 0; i < all.length; i++){
+      const ln = all[i].localName || all[i].nodeName;
+      if (ln && ln.toLowerCase() === target) results.push(all[i]);
+    }
+    return results;
+  }
+
+  function textOf(el){
+    return el ? el.textContent.trim() : "";
+  }
+
+  function showResult(kind, text, code){
+    resultWrap.classList.remove("hidden");
+    receiptText.textContent = text;
+    receipt.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function setPanelText(el, content){
+    if (content){
+      el.textContent = content;
+    } else {
+      el.innerHTML = '<span class="empty">Nessun contenuto disponibile.</span>';
+    }
+  }
+
+  function downloadText(filename, content){
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  downloadReqBtn.addEventListener("click", () => {
+    if (lastRequestXML) downloadText("richiesta_bapp_cassa_ws.txt", lastRequestXML);
+  });
+  downloadRespBtn.addEventListener("click", () => {
+    if (lastResponseXML) downloadText("risposta_bapp_cassa_ws.txt", lastResponseXML);
+  });
+
+  sendBtn.addEventListener("click", async () => {
+    if (!selectedFile) return;
+
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<span class="spinner"></span>Invio in corso&hellip;';
+    downloadReqBtn.disabled = true;
+    downloadRespBtn.disabled = true;
+
     try {
-      dati = await risposta.json();
-    } catch (err) {
-      erroreEl.textContent = 'Risposta del server non comprensibile.';
-      return;
+      const base64 = await readFileAsBase64(selectedFile);
+      const requestXML = buildEnvelope(selectedFile.name, base64, descrizioneInput.value);
+      lastRequestXML = requestXML;
+      setPanelText(reqPanelText, requestXML);
+
+      const response = await fetch(WS_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/xml; charset=utf-8"
+          // Alcuni server SOAP richiedono anche l'header SOAPAction:
+          // "SOAPAction": "\"\""
+        },
+        body: requestXML
+      });
+
+      const responseText = await response.text();
+      const cleanedResponseText = deepDecode(responseText);
+      lastResponseXML = cleanedResponseText;
+      setPanelText(respPanelText, cleanedResponseText);
+      downloadReqBtn.disabled = false;
+      downloadRespBtn.disabled = false;
+
+      if (!response.ok){
+        showResult("err", `Errore HTTP ${response.status} ${response.statusText}.\n\nDettagli nel pannello "Risposta ricevuta" qui sotto o nel file scaricabile.`, "?");
+        return;
+      }
+
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(cleanedResponseText, "text/xml");
+
+      const parserError = xmlDoc.getElementsByTagName("parsererror")[0];
+      if (parserError){
+        showResult("err", "La risposta ricevuta non è un XML valido.\n\nDettagli nel pannello \"Risposta ricevuta\" qui sotto o nel file scaricabile.", "?");
+        return;
+      }
+
+      // I dati utili sono dentro <Trangws>, non alla radice del documento.
+      const trangwsEl = findByLocalName(xmlDoc, "Trangws");
+      if (!trangwsEl){
+        showResult("unknown", "Impossibile trovare il tag <Trangws> nella risposta.\n\nDettagli nel pannello \"Risposta ricevuta\" qui sotto o nel file scaricabile.", "?");
+        return;
+      }
+
+      const wscode = deepDecode(textOf(findByLocalName(trangwsEl, "WSCODE")));
+      const descr = deepDecode(textOf(findByLocalName(trangwsEl, "WSDESCR")));
+      const wserr = deepDecode(textOf(findByLocalName(trangwsEl, "WSERR")));
+      const wswar = deepDecode(textOf(findByLocalName(trangwsEl, "WSWAR")));
+
+      // I dettagli per file sono dentro <WSRET><CASSA><row>...</row></CASSA></WSRET>,
+      // possono esserci più righe.
+      const wsretEl = findByLocalName(trangwsEl, "WSRET");
+      const rowEls = findAllByLocalName(wsretEl, "row");
+      const rowsText = rowEls.map((rowEl) => {
+        const filename = deepDecode(textOf(findByLocalName(rowEl, "FILENAME")));
+        const messaggio = deepDecode(textOf(findByLocalName(rowEl, "MESSAGGIO")));
+        return `Filename: ${filename}\nmessaggio: ${messaggio}`;
+      }).join("\n\n");
+
+      if (wscode === "0"){
+        let descrDisplay = descr || "(WSDESCR vuoto)";
+        // Va a capo dopo "PN Cassa Creata/Aggiornata" (con o senza spazi attorno alla barra)
+        descrDisplay = descrDisplay.replace(/(Creata\s*\/\s*Aggiornata)\s+/i, "$1\n");
+        showResult("ok", [descrDisplay, rowsText].filter(Boolean).join("\n\n"), wscode);
+      } else if (wscode === "1"){
+        const lines = [wserr || descr || "(nessun messaggio d'errore)"];
+        if (wswar) lines.push("Avviso: " + wswar);
+        if (rowsText) lines.push("", rowsText);
+        showResult("err", lines.join("\n"), wscode);
+      } else {
+        const lines = [`WSCODE ricevuto: ${wscode || "assente"}`];
+        if (descr) lines.push(`WSDESCR: ${descr}`);
+        if (wserr) lines.push(`WSERR: ${wserr}`);
+        if (wswar) lines.push(`WSWAR: ${wswar}`);
+        if (rowsText) lines.push("", rowsText);
+        showResult("unknown", lines.join("\n"), wscode || "?");
+      }
+
+    } catch (err){
+      const isLikelyCors = err instanceof TypeError;
+      const hint = isLikelyCors
+        ? "Il browser ha bloccato la chiamata prima di ricevere una risposta: quasi sempre è un problema di CORS (il server non restituisce l'header Access-Control-Allow-Origin per questa pagina) oppure di certificato/rete sulla porta 448. Apri la console del browser (F12 -> Console/Network) per il dettaglio esatto: se vedi la scritta \"CORS\" o \"blocked\", il file che gira su GitHub Pages non può leggere la risposta finché il CorsFilter sul Tomcat non la consente esplicitamente."
+        : "Errore imprevisto durante l'invio.";
+      showResult("network", "Chiamata al web service non riuscita.\n\n" + (err && err.message ? err.message : String(err)) + "\n\n" + hint);
+      setPanelText(respPanelText, "");
+      downloadReqBtn.disabled = !lastRequestXML;
+      downloadRespBtn.disabled = !lastResponseXML;
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.textContent = "Invia a Primanota di cassa";
     }
+  });
 
-    // ATTENZIONE: questa parte va verificata sul formato JSON reale del servlet.
-    // Provo a riconoscere automaticamente gli esiti più comuni; se il servlet
-    // usa nomi di campo diversi, modifica qui sotto di conseguenza.
-    const esitoNegativo =
-      dati.esito === false || dati.esito === 'KO' || dati.esito === 'NO' ||
-      dati.ok === false ||
-      dati.errore || dati.error ||
-      (typeof dati.codice !== 'undefined' && dati.codice !== 0 && dati.codice !== '0');
-
-    if (esitoNegativo) {
-      erroreEl.textContent = dati.messaggio || dati.message || 'Nome utente o password non corretti.';
-      return;
-    }
-
-    const token = dati.token || dati.accessToken || dati.access_token || null;
-
-    // Salvo l'intera risposta del login: appena conoscerai i campi esatti
-    // restituiti da bgla_chkpwd, potrai pescarli da qui (sessione.datiLogin.nomeCampo)
-    // per includerli nell'invio al secondo servizio.
-    sessione = { username, token, datiLogin: dati };
-    try {
-      localStorage.setItem('app_sessione', JSON.stringify(sessione));
-    } catch (err) { /* storage non disponibile, si continua comunque in memoria */ }
-
-    document.getElementById('login-password').value = '';
-    mostraSchermo('s-invio');
-    aggiornaIntestazioneInvio();
-
-  } catch (err) {
-    erroreEl.textContent = 'Impossibile contattare il server. Verifica la connessione.';
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Accedi';
-  }
-}
-
-function caricaSessioneSalvata() {
-  try {
-    const raw = localStorage.getItem('app_sessione');
-    if (raw) sessione = JSON.parse(raw);
-  } catch (err) {
-    sessione = null;
-  }
-}
-
-function eseguiLogout() {
-  if (!confirm('Vuoi uscire?')) return;
-  localStorage.removeItem('app_sessione');
-  sessione = null;
-  fileSelezionato = null;
-  document.getElementById('anteprima-lista').innerHTML = '';
-  document.getElementById('campo-note').value = '';
-  aggiornaBottoneInvia();
-  mostraSchermoLogin();
-}
-
-function aggiornaIntestazioneInvio() {
-  document.getElementById('invio-sub').textContent =
-    `${sessione.username} · ${config.istanza}`;
-}
-
-// Costruisce gli header di autenticazione da riusare in ogni chiamata
-function headerAutenticazione() {
-  const headers = {};
-  if (sessione && sessione.token) {
-    headers['Authorization'] = `Bearer ${sessione.token}`;
-  }
-  return headers;
-}
-
-// =====================================================================
-// SCHERMO 3: SELEZIONE FILE E INVIO
-// =====================================================================
-document.getElementById('input-foto').addEventListener('change', function(e) {
-  gestisciSelezioneFile(e.target.files[0]);
-});
-document.getElementById('input-allegato').addEventListener('change', function(e) {
-  gestisciSelezioneFile(e.target.files[0]);
-});
-
-function gestisciSelezioneFile(file) {
-  if (!file) return;
-  fileSelezionato = file;
-  renderAnteprima();
-  aggiornaBottoneInvia();
-}
-
-function renderAnteprima() {
-  const container = document.getElementById('anteprima-lista');
-  container.innerHTML = '';
-  if (!fileSelezionato) return;
-
-  const item = document.createElement('div');
-  item.className = 'anteprima-item';
-
-  const isImmagine = fileSelezionato.type.startsWith('image/');
-  const thumbHtml = isImmagine
-    ? `<img class="anteprima-thumb" id="thumb-img" alt="">`
-    : `<div class="anteprima-thumb">📄</div>`;
-
-  item.innerHTML = `
-    ${thumbHtml}
-    <div class="anteprima-info">
-      <div class="anteprima-nome">${fileSelezionato.name}</div>
-      <div class="anteprima-dim">${formattaDimensione(fileSelezionato.size)}</div>
-    </div>
-    <button class="btn-rimuovi" onclick="rimuoviFile()">×</button>
-  `;
-  container.appendChild(item);
-
-  if (isImmagine) {
-    const reader = new FileReader();
-    reader.onload = e => { document.getElementById('thumb-img').src = e.target.result; };
-    reader.readAsDataURL(fileSelezionato);
-  }
-}
-
-function rimuoviFile() {
-  fileSelezionato = null;
-  document.getElementById('input-foto').value = '';
-  document.getElementById('input-allegato').value = '';
-  renderAnteprima();
-  aggiornaBottoneInvia();
-}
-
-function formattaDimensione(bytes) {
-  if (bytes < 1024) return bytes + ' B';
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-}
-
-function aggiornaBottoneInvia() {
-  document.getElementById('btn-invia').disabled = !fileSelezionato;
-}
-
-async function inviaDocumento() {
-  if (!fileSelezionato) return;
-
-  const btn = document.getElementById('btn-invia');
-  btn.disabled = true;
-  btn.classList.add('invio-corso');
-  btn.innerHTML = '<span class="spinner"></span> Invio in corso...';
-
-  // Metadati generici: personalizza questi campi in base al tuo web service.
-  // sessione.datiLogin contiene l'intera risposta JSON ricevuta da bgla_chkpwd:
-  // sostituisci "idUtente" qui sotto con il nome del campo reale che ti serve
-  // (es. sessione.datiLogin.codiceUtente, sessione.datiLogin.matricola, ecc.)
-  const metadati = {
-    istanza: config.istanza,
-    utente: sessione.username,
-    idUtente: sessione.datiLogin ? sessione.datiLogin.idUtente : null,
-    note: document.getElementById('campo-note').value.trim(),
-    dataOraInvio: new Date().toISOString(),
-    nomeFileOriginale: fileSelezionato.name,
-    tipoFile: fileSelezionato.type || 'application/octet-stream'
-  };
-
-  // multipart/form-data: più efficiente di base64-in-JSON per file da fotocamera
-  const formData = new FormData();
-  formData.append('metadati', JSON.stringify(metadati));
-  formData.append('file', fileSelezionato, fileSelezionato.name);
-
-  try {
-    const risposta = await fetch(`${config.url}${config.servletUpload}`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: headerAutenticazione(), // NON impostare Content-Type a mano con FormData: il browser aggiunge il boundary corretto
-      body: formData
+  if ("serviceWorker" in navigator){
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
     });
-
-    if (risposta.status === 401) {
-      mostraToast('Sessione scaduta. Effettua di nuovo l\'accesso.');
-      eseguiLogoutSilenzioso();
-      return;
-    }
-
-    if (!risposta.ok) {
-      mostraToast(`Invio non riuscito (errore ${risposta.status})`);
-      return;
-    }
-
-    mostraToast('✓ Documento inviato correttamente');
-    rimuoviFile();
-    document.getElementById('campo-note').value = '';
-
-  } catch (err) {
-    mostraToast('Impossibile contattare il server. Verifica la connessione.');
-  } finally {
-    btn.classList.remove('invio-corso');
-    btn.innerHTML = 'Invia documento';
-    aggiornaBottoneInvia();
   }
-}
-
-function eseguiLogoutSilenzioso() {
-  localStorage.removeItem('app_sessione');
-  sessione = null;
-  mostraSchermoLogin();
-}
-
-// =====================================================================
-// NAVIGAZIONE E UTILITY
-// =====================================================================
-function mostraSchermo(id) {
-  document.querySelectorAll('.schermo').forEach(s => s.classList.remove('attivo'));
-  document.getElementById(id).classList.add('attivo');
-  window.scrollTo(0, 0);
-}
-
-function mostraToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('visibile');
-  setTimeout(() => t.classList.remove('visibile'), 2800);
-}
-
-// =====================================================================
-// SERVICE WORKER (installabilità PWA)
-// =====================================================================
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
+})();
 </script>
 </body>
 </html>

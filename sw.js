@@ -1,31 +1,48 @@
-const CACHE = 'invio-documenti-v1';
-const FILE_STATICI = ['./', './index.html', './manifest.json'];
+const CACHE_NAME = "primanota-cassa-v26";
+const ASSETS = [
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png"
+];
 
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILE_STATICI)));
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+  );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys =>
-    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-  ));
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys
+          .filter((key) => key !== CACHE_NAME)
+          .map((key) => caches.delete(key))
+      )
+    )
+  );
   self.clients.claim();
 });
 
-self.addEventListener('fetch', e => {
-  const url = new URL(e.request.url);
+// Network-first for the SOAP call (never cache API responses),
+// cache-first for the static app shell.
+self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
 
-  // IMPORTANTE: non mettere mai in cache (né servire dalla cache) le chiamate
-  // verso i web service di autenticazione/upload, che vanno sempre in rete.
-  const isChiamataApi = e.request.method !== 'GET'
-    || url.pathname.endsWith('/login')
-    || url.pathname.endsWith('/upload');
-
-  if (isChiamataApi) {
-    e.respondWith(fetch(e.request));
+  if (url.hostname === "www.lucchi.com") {
+    // Always go to network for the web service call.
     return;
   }
 
-  e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      return (
+        cached ||
+        fetch(event.request).catch(() => cached)
+      );
+    })
+  );
 });
